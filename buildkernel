@@ -55,6 +55,7 @@ IDDEVDIR="/dev/disk/by-id"
 DEFAULTLUKSKEYFILE="luks-key.gpg"
 LUKSKEYFILE="${DEFAULTLUKSKEYFILE}"
 MODPROBEDIR="/etc/modprobe.d"
+OSSLMODDIR="$(openssl version -m|awk '{print $2}'|tr -d '"')"
 CMDLINE_ROOT="/dev/ram0"
 SYSTEMD_INIT="/usr/lib/systemd/systemd"
 SYSTEMD_NEW_INIT="/lib/systemd/systemd"
@@ -1935,6 +1936,11 @@ modify_initramfs() {
             cp ${VERBOSITYFLAG} "${MODPROBEDIR}"/* "${INITRAMFSDIR}${MODPROBEDIR}/"
         fi
     fi
+
+	if [ -d "${OSSLMODDIR}" ]; then
+		show "Copying ${OSSLMODDIR} directory into initramfs..."
+		cp ${VERBOSITYFLAG} -r "${OSSLMODDIR}" "${INITRAMFSDIR}/usr/lib64/"
+	fi
 
     # you can define user_modify_initramfs in your buildkernel.conf file...
     if fn_exists user_modify_initramfs; then
